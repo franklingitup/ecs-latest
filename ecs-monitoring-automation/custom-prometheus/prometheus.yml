@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093'] # Assuming it's in the same Task or via Service Discovery
+
+rule_files:
+  - "rules.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'cloudwatch'
+    static_configs:
+      - targets: ['cloudwatch-exporter.local:9106']
+
+  - job_name: 'application-containers'
+    metrics_path: '/metrics'
+    dns_sd_configs:
+      - names:
+          - 'my-app-service.local'
+        type: 'A'
+        port: 8080
